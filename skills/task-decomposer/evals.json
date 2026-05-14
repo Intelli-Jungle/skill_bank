@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "3.0.0",
   "skill": "task-decomposer",
-  "description": "任务拆解器评测集 — 验证意图识别、规模评估、拆解逻辑的正确性",
+  "description": "任务拆解器评测集 v3 — 验证 XS/S/M/L/XL 五级规模评估 + 意图识别 + 拆解逻辑 + 业界对标",
   "updated": "2026-05-14",
   "cases": [
     {
@@ -102,309 +102,282 @@
       }
     },
     {
+      "id": "intent-010",
+      "category": "意图识别",
+      "description": "新增关键词'增加''添加' → type:feature",
+      "input": "在设置页面增加一个暗黑模式开关",
+      "expected": {
+        "type": "type:feature",
+        "assignee": "JungleAssistant"
+      }
+    },
+    {
       "id": "mixed-001",
       "category": "混合类型优先级",
       "description": "修复bug + 写文档 → type:bug 优先（bug > docs）",
       "input": "修复百分号按钮崩溃的bug，修复后更新文档说明",
       "expected": {
         "type": "type:bug",
-        "assignee": "JungleAssistant",
-        "note": "bug优先级高于docs"
+        "assignee": "JungleAssistant"
       }
     },
     {
       "id": "mixed-002",
       "category": "混合类型优先级",
-      "description": "开发功能 + 测试验证 → type:feature 优先（feature > verification）",
-      "input": "实现历史记录功能，完成后写测试验证",
+      "description": "调研 + 开发 → type:feature 优先（feature > research）",
+      "input": "调研Stack导航方案并实现页面跳转功能",
       "expected": {
         "type": "type:feature",
-        "assignee": "JungleAssistant",
-        "note": "feature优先级高于verification"
+        "assignee": "JungleAssistant"
       }
     },
     {
       "id": "mixed-003",
       "category": "混合类型优先级",
-      "description": "调研 + 决策 → type:research 优先（research > decision）",
-      "input": "调研HarmonyOS编译方案，然后请狗爹确认采用哪个",
+      "description": "验证 + 学习 → type:verification 优先（verification > learning）",
+      "input": "学习自动化测试框架，验证百分号功能的测试覆盖",
       "expected": {
-        "type": "type:research",
-        "assignee": "IntelliJungle",
-        "note": "research优先级高于decision"
+        "type": "type:verification",
+        "assignee": "IntelliJungle"
       }
     },
     {
       "id": "mixed-004",
       "category": "混合类型优先级",
-      "description": "学习 + 写文档 → type:learning 优先（learning > docs）",
-      "input": "学习ArkTS的@State装饰器用法，并写一篇教程文档",
+      "description": "验证 + 文档 → type:verification 优先（verification > docs）",
+      "input": "审查代码并输出审查文档",
       "expected": {
-        "type": "type:learning",
-        "assignee": "IntelliJungle",
-        "note": "learning优先级高于docs"
+        "type": "type:verification",
+        "assignee": "IntelliJungle"
       }
     },
     {
       "id": "mixed-005",
       "category": "混合类型优先级",
-      "description": "调研+功能词 → type:feature 优先（feature > research，功能触发feature）",
-      "input": "调研kanban功能是否适合我们",
+      "description": "调研+功能词共存 → type:feature优先",
+      "input": "研究百分号按钮的最佳实现，并开发这个功能",
       "expected": {
         "type": "type:feature",
-        "assignee": "JungleAssistant",
-        "note": "「功能」匹配feature，「调研」匹配research。按优先级feature>research，结果为feature。这是已知边界情况，实际使用时需人工判断"
+        "assignee": "JungleAssistant"
       }
     },
     {
       "id": "unknown-001",
       "category": "未知类型兜底",
-      "description": "无任何关键词匹配 → type:research 兜底",
-      "input": "帮我看看最新的新闻",
+      "description": "无任何关键词 → type:research, IntelliJungle",
+      "input": "帮我看看那个东西能不能用",
       "expected": {
         "type": "type:research",
         "assignee": "IntelliJungle",
-        "note": "未识别任务类型，默认归为调研，请爹助人工判断"
+        "note": "⚠️ 未识别任务类型，默认归为调研，请爹助人工判断"
       }
     },
     {
       "id": "unknown-002",
       "category": "未知类型兜底",
-      "description": "模糊输入 → type:research 兜底",
-      "input": "搞一下那个事情",
+      "description": "只有模糊描述 → type:research, IntelliJungle",
+      "input": "评估一下目前的状态",
       "expected": {
         "type": "type:research",
         "assignee": "IntelliJungle",
-        "note": "未识别任务类型，默认归为调研，请爹助人工判断"
+        "note": "⚠️ 未识别任务类型，默认归为调研，请爹助人工判断"
       }
     },
     {
       "id": "size-001",
       "category": "规模评估",
-      "description": "小任务（1文件, 1AC, <50行） → S",
-      "input": {
-        "task": "修改按钮颜色为蓝色",
-        "signals": {
-          "est_loc": 5,
-          "files": 1,
-          "ac_count": 1,
-          "external_deps": 0,
-          "cross_module": false,
-          "est_hours": 0.2
-        }
-      },
-      "expected": {
-        "size": "S",
-        "action": "直接创建单个Issue"
-      }
+      "description": "XS: 单文件 <100行 → XS",
+      "input": "把按钮颜色改成蓝色",
+      "params": {"estimated_loc": 3, "estimated_files": 1},
+      "expected": {"size": "XS", "action": "direct", "note": "可合并至S"}
     },
     {
       "id": "size-002",
       "category": "规模评估",
-      "description": "中等任务（2文件, 3AC, 100行） → M",
-      "input": {
-        "task": "添加输入验证逻辑",
-        "signals": {
-          "est_loc": 100,
-          "files": 2,
-          "ac_count": 3,
-          "external_deps": 1,
-          "cross_module": false,
-          "est_hours": 3
-        }
-      },
-      "expected": {
-        "size": "M",
-        "action": "创建单个Issue（带分节）"
-      }
+      "description": "XS: 单文件文案修正 → XS",
+      "input": "把底部3个tab文案从英文改成中文",
+      "params": {"estimated_loc": 15, "estimated_files": 1},
+      "expected": {"size": "XS", "action": "direct", "note": "可合并至S"}
     },
     {
       "id": "size-003",
       "category": "规模评估",
-      "description": "大任务（4文件, 5AC, 240行, 跨模块） → L（任一信号触发L）",
-      "input": {
-        "task": "实现历史记录功能：保存/查看/清空/搜索，适配暗黑模式",
-        "signals": {
-          "est_loc": 240,
-          "files": 4,
-          "ac_count": 5,
-          "external_deps": 1,
-          "cross_module": true,
-          "est_hours": 8
-        }
-      },
-      "expected": {
-        "size": "L",
-        "action": "进入拆解阶段"
-      }
+      "description": "S: 60行 2文件 → S",
+      "input": "实现一个简单的百分比转换工具函数",
+      "params": {"estimated_loc": 60, "estimated_files": 2},
+      "expected": {"size": "S", "action": "direct"}
     },
     {
       "id": "size-004",
       "category": "规模评估",
-      "description": "大任务（仅AC多，其他小） → L（任一信号触发L）",
-      "input": {
-        "task": "给10个页面添加统一的错误提示",
-        "signals": {
-          "est_loc": 30,
-          "files": 1,
-          "ac_count": 10,
-          "external_deps": 0,
-          "cross_module": false,
-          "est_hours": 1
-        }
-      },
-      "expected": {
-        "size": "L",
-        "action": "进入拆解阶段",
-        "note": "AC数量(10)触发L，其他信号小"
-      }
+      "description": "S: 180行 3文件 → S",
+      "input": "给计算器增加撤销功能（单按钮，简单栈实现）",
+      "params": {"estimated_loc": 180, "estimated_files": 3},
+      "expected": {"size": "S", "action": "direct"}
+    },
+    {
+      "id": "size-005",
+      "category": "规模评估",
+      "description": "M: 500行 6文件 → M",
+      "input": "实现历史记录的保存和查看功能",
+      "params": {"estimated_loc": 500, "estimated_files": 6},
+      "expected": {"size": "M", "action": "conditional_split"}
+    },
+    {
+      "id": "size-006",
+      "category": "规模评估",
+      "description": "M: 900行 8文件 → M",
+      "input": "实现计算器设置页面（精度、主题、声音）",
+      "params": {"estimated_loc": 900, "estimated_files": 8},
+      "expected": {"size": "M", "action": "conditional_split"}
+    },
+    {
+      "id": "size-007",
+      "category": "规模评估",
+      "description": "L: 2000行 30文件 → L",
+      "input": "实现科学计算器模式（三角函数、对数、阶乘、角度切换）",
+      "params": {"estimated_loc": 2000, "estimated_files": 30},
+      "expected": {"size": "L", "action": "must_split"}
+    },
+    {
+      "id": "size-008",
+      "category": "规模评估",
+      "description": "L: 1500行 15文件 → L",
+      "input": "实现完整的单位换算功能（长度/重量/温度/货币）",
+      "params": {"estimated_loc": 1500, "estimated_files": 15},
+      "expected": {"size": "L", "action": "must_split"}
+    },
+    {
+      "id": "size-009",
+      "category": "规模评估",
+      "description": "L+: 5000行 60文件 → L+（过渡区，建议先拆）",
+      "input": "重构整个计算引擎架构",
+      "params": {"estimated_loc": 5000, "estimated_files": 60},
+      "expected": {"size": "L+", "action": "strongly_split", "note": "3000-10000行过渡区，文件数≥50，强烈建议先拆为2-3个L级"}
+    },
+    {
+      "id": "size-010",
+      "category": "规模评估",
+      "description": "XL: 15000行 200文件 → XL（Epic）",
+      "input": "开发完整的OpenCalc开源计算器App（基础/科学/历史/换算/主题/手势/语音）",
+      "params": {"estimated_loc": 15000, "estimated_files": 200},
+      "expected": {"size": "XL", "action": "epic_split", "note": "必须先拆为子系统Epic，再递归拆解"}
+    },
+    {
+      "id": "size-011",
+      "category": "规模评估",
+      "description": "XL: 12000行 80文件 → XL（行数触发）",
+      "input": "从零搭建一个完整的ArkTS UI组件库（30+组件）",
+      "params": {"estimated_loc": 12000, "estimated_files": 80},
+      "expected": {"size": "XL", "action": "epic_split", "note": "行数>10000触发XL，即使文件数未达100"}
+    },
+    {
+      "id": "size-012",
+      "category": "规模评估",
+      "description": "文件数升级：200行 20文件 → 由S升级一级",
+      "input": "给所有已有组件添加无障碍属性（涉及20个文件但每文件改动少）",
+      "params": {"estimated_loc": 200, "estimated_files": 20},
+      "expected": {"size": "M", "action": "conditional_split", "note": "代码行数S级但文件数远超S上限(<4)→升级为M"}
     },
     {
       "id": "decompose-001",
-      "category": "任务拆解",
-      "description": "开发类L任务 → 按模块拆解",
-      "input": {
-        "task": "实现历史记录功能",
-        "type": "type:feature",
-        "size": "L"
-      },
-      "expected": {
-        "decompose_by": "按模块/分层",
-        "min_subtasks": 2,
-        "max_subtasks": 5,
-        "max_depth": 2,
-        "example_subtasks": [
-          "数据层（存储/读取）",
-          "UI层（展示/交互）",
-          "验证测试"
-        ]
-      }
+      "category": "L级拆解",
+      "description": "L级开发任务→按分层拆为3个M/S",
+      "input": "实现用户登录功能（UI+逻辑+token存储）",
+      "params": {"estimated_loc": 1200, "estimated_files": 12, "size": "L"},
+      "expected": {"subtask_count_range": [2, 5], "assignee": "JungleAssistant"}
     },
     {
       "id": "decompose-002",
-      "category": "任务拆解",
-      "description": "调研类L任务 → 按子主题拆解",
-      "input": {
-        "task": "调研AI Agent协作方案",
-        "type": "type:research",
-        "size": "L"
-      },
-      "expected": {
-        "decompose_by": "按子主题",
-        "min_subtasks": 2,
-        "max_subtasks": 5,
-        "max_depth": 2,
-        "example_subtasks": [
-          "GitHub Issues方案调研",
-          "Hermes Kanban方案调研",
-          "对比分析与建议"
-        ]
-      }
+      "category": "L级拆解",
+      "description": "L级调研→按子主题拆为2-4个M/S",
+      "input": "调研三种状态管理方案（@State/@Link/@Provide）的适用场景和性能对比",
+      "params": {"estimated_loc": 0, "estimated_files": 3, "size": "L"},
+      "expected": {"subtask_count_range": [2, 4], "assignee": "IntelliJungle"}
     },
     {
       "id": "decompose-003",
-      "category": "任务拆解",
-      "description": "测试类L任务 → 按测试类型拆解",
-      "input": {
-        "task": "全面验证百分号按钮",
-        "type": "type:verification",
-        "size": "L"
-      },
-      "expected": {
-        "decompose_by": "按测试类型",
-        "min_subtasks": 2,
-        "max_subtasks": 5,
-        "max_depth": 2,
-        "example_subtasks": [
-          "编译验证",
-          "功能测试",
-          "UI截图验证"
-        ]
-      }
+      "category": "XL拆解",
+      "description": "XL→按子系统先拆为多个L",
+      "input": "开发完整IM模块：消息列表/聊天窗口/联系人/群组/文件传输/语音通话",
+      "params": {"estimated_loc": 18000, "estimated_files": 150, "size": "XL"},
+      "expected": {"first_level_subtask_count_range": [4, 7], "subtask_size": "L", "action": "epic_split"}
     },
     {
       "id": "decompose-004",
-      "category": "任务拆解",
-      "description": "批量上限：超过5个子任务 → 分批创建",
-      "input": {
-        "task": "重构整个计算器App",
-        "type": "type:feature",
-        "size": "L",
-        "estimated_subtasks": 8
-      },
-      "expected": {
-        "batch_limit": 5,
-        "note": "超过批量上限，需分2批创建（5 + 3）"
-      }
+      "category": "拆解约束",
+      "description": "批量上限：8个M级子任务→分2批创建",
+      "input": "为所有页面添加统一的错误处理（8个页面）",
+      "params": {"estimated_loc": 1600, "estimated_files": 16},
+      "expected": {"batches": 2, "note": "单次上限5个，超过需分批"}
     },
     {
       "id": "decompose-005",
-      "category": "任务拆解",
-      "description": "深度限制：最多2层（L→M→S）",
-      "input": {
-        "task": "大任务A（L级）",
-        "type": "type:feature",
-        "size": "L",
-        "subtask": "子任务B（M级）"
-      },
-      "expected": {
-        "max_depth": 2,
-        "note": "子任务B已是M级，不继续拆解。禁止递归拆解S级任务"
-      }
+      "category": "拆解约束",
+      "description": "深度限制：L→M→S，禁止递归至S以下",
+      "input": "任意L级任务",
+      "expected": {"max_depth": 2, "min_subtask_size": "S", "note": "禁止拆至XS粒度过细"}
     },
     {
       "id": "decompose-006",
-      "category": "任务拆解",
-      "description": "依赖标记：子任务3依赖子任务1+2",
-      "input": {
-        "subtasks": [
-          {"id": 1, "title": "数据层实现", "independent": true},
-          {"id": 2, "title": "UI层实现", "independent": true},
-          {"id": 3, "title": "集成验证", "depends_on": [1, 2]}
-        ]
-      },
+      "category": "拆解约束",
+      "description": "依赖标记：有先后顺序的子任务需标记depends on",
+      "input": "实现功能并测试（测试依赖功能完成）",
+      "params": {"estimated_loc": 1800, "estimated_files": 20, "size": "L"},
+      "expected": {"dependencies_marked": true, "note": "验证子任务depends on开发子任务"}
+    },
+    {
+      "id": "assign-001",
+      "category": "角色分配",
+      "description": "7种类型→3种角色映射验证",
+      "input": "各类型任务",
       "expected": {
-        "dependency_marking": [
-          "#N3 depends on #N1（需N1完成后再开工）",
-          "#N3 depends on #N2（需N2完成后再开工）"
-        ],
-        "note": "父Issue需标记依赖关系，避免assignee同时开工"
+        "feature": "JungleAssistant",
+        "bug": "JungleAssistant",
+        "verification": "IntelliJungle",
+        "research": "IntelliJungle",
+        "learning": "IntelliJungle",
+        "docs": "IntelliJungle",
+        "decision": "zhangtbj"
       }
     },
     {
-      "id": "assignee-001",
-      "category": "角色分配",
-      "description": "所有角色映射验证",
+      "id": "merge-001",
+      "category": "XS批量合并",
+      "description": "3个XS任务→合并为1个S",
       "inputs": [
-        {"type": "type:feature", "expected_assignee": "JungleAssistant"},
-        {"type": "type:bug", "expected_assignee": "JungleAssistant"},
-        {"type": "type:verification", "expected_assignee": "IntelliJungle"},
-        {"type": "type:research", "expected_assignee": "IntelliJungle"},
-        {"type": "type:learning", "expected_assignee": "IntelliJungle"},
-        {"type": "type:docs", "expected_assignee": "IntelliJungle"},
-        {"type": "type:decision", "expected_assignee": "zhangtbj"}
+        "把按钮颜色改成蓝色",
+        "把标题字号改成18",
+        "把底部文案改成中文"
       ],
+      "params": {"estimated_loc": 30, "estimated_files": 1},
+      "expected": {"merged": true, "result_size": "S", "original_count": 3, "note": "3个XS合并为1个S，避免碎片化"}
+    },
+    {
+      "id": "industry-001",
+      "category": "业界对标",
+      "description": "Mike Cohn Fibonacci 对标验证",
+      "input": "验证 XS≈1pt, S≈2-3pt, M≈5pt, L≈8-13pt, XL≈20+pt",
       "expected": {
-        "all_match": true,
-        "note": "七种类型各映射到正确的角色"
+        "XS": {"story_points": 1},
+        "S": {"story_points_range": [2, 3]},
+        "M": {"story_points": 5},
+        "L": {"story_points_range": [8, 13]},
+        "XL": {"story_points": "20+"}
+      }
+    },
+    {
+      "id": "industry-002",
+      "category": "业界对标",
+      "description": "XL必须拆分的业界共识",
+      "input": "验证所有五大来源均要求XL不可进入Sprint",
+      "expected": {
+        "atlassian": "must_split",
+        "safe": "must_split",
+        "google": "must_split",
+        "microsoft": "must_split",
+        "mike_cohn": "must_split"
       }
     }
-  ],
-  "summary": {
-    "total_cases": 27,
-    "categories": {
-      "意图识别": 9,
-      "混合类型优先级": 5,
-      "未知类型兜底": 2,
-      "规模评估": 4,
-      "任务拆解": 6,
-      "角色分配": 1
-    },
-    "coverage": {
-      "intent_types": ["feature", "bug", "research", "verification", "learning", "docs", "decision"],
-      "size_levels": ["S", "M", "L"],
-      "edge_cases": ["未知类型兜底", "混合类型优先级", "批量上限", "深度限制", "依赖标记"],
-      "languages": ["中文关键词", "英文关键词"]
-    }
-  }
+  ]
 }
