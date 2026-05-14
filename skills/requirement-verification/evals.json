@@ -1,0 +1,168 @@
+{
+  "version": "1.0.0",
+  "skill": "requirement-verification",
+  "description": "需求检视 Skill 评测集 — 验证编译流程、差分对比、报告格式、流转逻辑的正确性",
+  "updated": "2026-05-14",
+  "cases": [
+    {
+      "id": "compile-001",
+      "category": "编译验证",
+      "description": "正常编译通过 → 报告标记 [PASS]",
+      "input": {
+        "build_result": "BUILD SUCCESSFUL in 4 s 270 ms",
+        "exit_code": 0,
+        "hap_exists": true
+      },
+      "expected": {
+        "compile_status": "[PASS]",
+        "action": "继续差分对比"
+      }
+    },
+    {
+      "id": "compile-002",
+      "category": "编译验证",
+      "description": "编译失败（SDK版本不匹配） → 报告标记 [FAIL] + 诊断建议",
+      "input": {
+        "build_result": "ERROR: Invalid value of 'DEVECO_SDK_HOME'",
+        "exit_code": 1,
+        "hap_exists": false
+      },
+      "expected": {
+        "compile_status": "[FAIL]",
+        "diagnosis": "检查 DEVECO_SDK_HOME 环境变量是否 export",
+        "action": "标记 [FAIL]，附诊断建议，不打回（先诊断）"
+      }
+    },
+    {
+      "id": "compile-003",
+      "category": "编译验证",
+      "description": "未 export DEVECO_SDK_HOME → 编译失败 + 提示修复",
+      "input": {
+        "env": "DEVECO_SDK_HOME 未设置",
+        "build_result": "hvigor ERROR: Invalid value of 'DEVECO_SDK_HOME'",
+        "exit_code": 2
+      },
+      "expected": {
+        "compile_status": "[FAIL]",
+        "root_cause": "DEVECO_SDK_HOME 未 export",
+        "fix": "export DEVECO_SDK_HOME=/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony",
+        "note": "这是已知问题，不是代码问题"
+      }
+    },
+    {
+      "id": "diff-001",
+      "category": "差分对比",
+      "description": "Issue声称与实际一致 → [PASS]",
+      "input": {
+        "claimed": {"files": 1, "loc": "+33 -6"},
+        "actual": {"files": ["CalculatorPage.ets"], "loc": "+33 -6"}
+      },
+      "expected": {
+        "diff_status": "[PASS]",
+        "mismatch": false
+      }
+    },
+    {
+      "id": "diff-002",
+      "category": "差分对比",
+      "description": "Issue声称1行实际3行 → 标记差异",
+      "input": {
+        "claimed": {"files": 1, "loc": "+1 -0"},
+        "actual": {"files": ["CalculatorPage.ets"], "loc": "+3 -1"}
+      },
+      "expected": {
+        "diff_status": "[PASS]（有差异已标注）",
+        "mismatch": true,
+        "note": "在报告中明确指出「声称+1行，实际+3行」。不信任 Issue body 的声称"
+      }
+    },
+    {
+      "id": "review-001",
+      "category": "代码审查",
+      "description": "5维度全部通过 → [PASS]",
+      "input": {
+        "correctness": true,
+        "robustness": true,
+        "security": true,
+        "maintainability": true,
+        "performance": true
+      },
+      "expected": {
+        "overall": "[PASS]",
+        "failed_dimensions": []
+      }
+    },
+    {
+      "id": "review-002",
+      "category": "代码审查",
+      "description": "安全性发现问题 → [FAIL]",
+      "input": {
+        "correctness": true,
+        "robustness": true,
+        "security": false,
+        "maintainability": true,
+        "performance": true
+      },
+      "expected": {
+        "overall": "[FAIL]",
+        "failed_dimensions": ["security"],
+        "note": "安全性维度不通过 → 整体判定 [FAIL]"
+      }
+    },
+    {
+      "id": "ac-matrix-001",
+      "category": "AC对照",
+      "description": "所有AC通过 → 判决 [PASS]",
+      "input": {
+        "ac_results": ["[PASS]", "[PASS]", "[PASS]", "[PASS]"]
+      },
+      "expected": {
+        "verdict": "[PASS] 审查通过，待狗爹终审",
+        "next_assignee": "zhangtbj"
+      }
+    },
+    {
+      "id": "ac-matrix-002",
+      "category": "AC对照",
+      "description": "有AC未通过 → 判决 [FAIL] + 打回狗助",
+      "input": {
+        "ac_results": ["[PASS]", "[FAIL]", "[PASS]", "[PASS]"],
+        "failed_ac": "AC2: 暗黑模式下按钮颜色不正确"
+      },
+      "expected": {
+        "verdict": "[FAIL] 需要修改",
+        "next_assignee": "JungleAssistant",
+        "comment_includes": "AC2 不通过的具体问题和修复建议"
+      }
+    },
+    {
+      "id": "report-format-001",
+      "category": "报告格式",
+      "description": "报告包含全部5个必需章节",
+      "input": {
+        "sections": ["编译验证", "代码审查", "功能验证", "AC对照矩阵", "判决"]
+      },
+      "expected": {
+        "all_sections_present": true,
+        "format": "v2（Issue #9 批准的格式）",
+        "language": "中文",
+        "marker_style": "[PASS]/[FAIL] 文本标记（非emoji）"
+      }
+    }
+  ],
+  "summary": {
+    "total_cases": 10,
+    "categories": {
+      "编译验证": 3,
+      "差分对比": 2,
+      "代码审查": 2,
+      "AC对照": 2,
+      "报告格式": 1
+    },
+    "coverage": {
+      "scenarios": ["编译成功", "编译失败", "环境缺失", "差分一致", "差分不一致", "全通过", "单维度失败", "全部AC通过", "部分AC失败", "报告格式检查"],
+      "edge_cases": ["SDK环境变量缺失", "Issue声称与实际不符", "模拟器不可用时降级验证"],
+      "output_formats": ["Issue Comment", "verification/<branch>_<date>.md"]
+    }
+  }
+}
