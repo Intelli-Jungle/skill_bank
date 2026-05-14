@@ -1,0 +1,410 @@
+{
+  "version": "1.0.0",
+  "skill": "task-decomposer",
+  "description": "任务拆解器评测集 — 验证意图识别、规模评估、拆解逻辑的正确性",
+  "updated": "2026-05-14",
+  "cases": [
+    {
+      "id": "intent-001",
+      "category": "意图识别",
+      "description": "纯开发任务 → type:feature, JungleAssistant",
+      "input": "给计算器增加一个百分号按钮，点击后追加%符号",
+      "expected": {
+        "type": "type:feature",
+        "assignee": "JungleAssistant",
+        "workspace": "features/"
+      }
+    },
+    {
+      "id": "intent-002",
+      "category": "意图识别",
+      "description": "纯bug修复 → type:bug, JungleAssistant",
+      "input": "修复百分号按钮双击崩溃的bug",
+      "expected": {
+        "type": "type:bug",
+        "assignee": "JungleAssistant",
+        "workspace": "bugfix/"
+      }
+    },
+    {
+      "id": "intent-003",
+      "category": "意图识别",
+      "description": "纯调研任务 → type:research, IntelliJungle",
+      "input": "调研Hermes v0.13.0的kanban方案的可行性",
+      "expected": {
+        "type": "type:research",
+        "assignee": "IntelliJungle",
+        "workspace": "research/"
+      }
+    },
+    {
+      "id": "intent-004",
+      "category": "意图识别",
+      "description": "纯验证任务 → type:verification, IntelliJungle",
+      "input": "测试百分号按钮在模拟器上的显示效果，截图验证",
+      "expected": {
+        "type": "type:verification",
+        "assignee": "IntelliJungle",
+        "workspace": "verification/"
+      }
+    },
+    {
+      "id": "intent-005",
+      "category": "意图识别",
+      "description": "纯学习任务 → type:learning, IntelliJungle",
+      "input": "学习ArkTS状态管理的基本用法，写一个入门教程",
+      "expected": {
+        "type": "type:learning",
+        "assignee": "IntelliJungle",
+        "workspace": "learning/"
+      }
+    },
+    {
+      "id": "intent-006",
+      "category": "意图识别",
+      "description": "纯文档任务 → type:docs, IntelliJungle",
+      "input": "更新README，补充最新的协作规则说明",
+      "expected": {
+        "type": "type:docs",
+        "assignee": "IntelliJungle",
+        "workspace": "docs/"
+      }
+    },
+    {
+      "id": "intent-007",
+      "category": "意图识别",
+      "description": "决策审批任务 → type:decision, zhangtbj",
+      "input": "确认是否将kanban方案纳入日常协作流程，请狗爹拍板",
+      "expected": {
+        "type": "type:decision",
+        "assignee": "zhangtbj",
+        "workspace": "(Issue comment only)"
+      }
+    },
+    {
+      "id": "intent-008",
+      "category": "意图识别",
+      "description": "英文关键词 → type:feature",
+      "input": "implement a history feature with save and search",
+      "expected": {
+        "type": "type:feature",
+        "assignee": "JungleAssistant"
+      }
+    },
+    {
+      "id": "intent-009",
+      "category": "意图识别",
+      "description": "英文关键词 → type:research",
+      "input": "research and analyze the new kanban capabilities in hermes v0.13",
+      "expected": {
+        "type": "type:research",
+        "assignee": "IntelliJungle"
+      }
+    },
+    {
+      "id": "mixed-001",
+      "category": "混合类型优先级",
+      "description": "修复bug + 写文档 → type:bug 优先（bug > docs）",
+      "input": "修复百分号按钮崩溃的bug，修复后更新文档说明",
+      "expected": {
+        "type": "type:bug",
+        "assignee": "JungleAssistant",
+        "note": "bug优先级高于docs"
+      }
+    },
+    {
+      "id": "mixed-002",
+      "category": "混合类型优先级",
+      "description": "开发功能 + 测试验证 → type:feature 优先（feature > verification）",
+      "input": "实现历史记录功能，完成后写测试验证",
+      "expected": {
+        "type": "type:feature",
+        "assignee": "JungleAssistant",
+        "note": "feature优先级高于verification"
+      }
+    },
+    {
+      "id": "mixed-003",
+      "category": "混合类型优先级",
+      "description": "调研 + 决策 → type:research 优先（research > decision）",
+      "input": "调研HarmonyOS编译方案，然后请狗爹确认采用哪个",
+      "expected": {
+        "type": "type:research",
+        "assignee": "IntelliJungle",
+        "note": "research优先级高于decision"
+      }
+    },
+    {
+      "id": "mixed-004",
+      "category": "混合类型优先级",
+      "description": "学习 + 写文档 → type:learning 优先（learning > docs）",
+      "input": "学习ArkTS的@State装饰器用法，并写一篇教程文档",
+      "expected": {
+        "type": "type:learning",
+        "assignee": "IntelliJungle",
+        "note": "learning优先级高于docs"
+      }
+    },
+    {
+      "id": "mixed-005",
+      "category": "混合类型优先级",
+      "description": "调研+功能词 → type:feature 优先（feature > research，功能触发feature）",
+      "input": "调研kanban功能是否适合我们",
+      "expected": {
+        "type": "type:feature",
+        "assignee": "JungleAssistant",
+        "note": "「功能」匹配feature，「调研」匹配research。按优先级feature>research，结果为feature。这是已知边界情况，实际使用时需人工判断"
+      }
+    },
+    {
+      "id": "unknown-001",
+      "category": "未知类型兜底",
+      "description": "无任何关键词匹配 → type:research 兜底",
+      "input": "帮我看看最新的新闻",
+      "expected": {
+        "type": "type:research",
+        "assignee": "IntelliJungle",
+        "note": "未识别任务类型，默认归为调研，请爹助人工判断"
+      }
+    },
+    {
+      "id": "unknown-002",
+      "category": "未知类型兜底",
+      "description": "模糊输入 → type:research 兜底",
+      "input": "搞一下那个事情",
+      "expected": {
+        "type": "type:research",
+        "assignee": "IntelliJungle",
+        "note": "未识别任务类型，默认归为调研，请爹助人工判断"
+      }
+    },
+    {
+      "id": "size-001",
+      "category": "规模评估",
+      "description": "小任务（1文件, 1AC, <50行） → S",
+      "input": {
+        "task": "修改按钮颜色为蓝色",
+        "signals": {
+          "est_loc": 5,
+          "files": 1,
+          "ac_count": 1,
+          "external_deps": 0,
+          "cross_module": false,
+          "est_hours": 0.2
+        }
+      },
+      "expected": {
+        "size": "S",
+        "action": "直接创建单个Issue"
+      }
+    },
+    {
+      "id": "size-002",
+      "category": "规模评估",
+      "description": "中等任务（2文件, 3AC, 100行） → M",
+      "input": {
+        "task": "添加输入验证逻辑",
+        "signals": {
+          "est_loc": 100,
+          "files": 2,
+          "ac_count": 3,
+          "external_deps": 1,
+          "cross_module": false,
+          "est_hours": 3
+        }
+      },
+      "expected": {
+        "size": "M",
+        "action": "创建单个Issue（带分节）"
+      }
+    },
+    {
+      "id": "size-003",
+      "category": "规模评估",
+      "description": "大任务（4文件, 5AC, 240行, 跨模块） → L（任一信号触发L）",
+      "input": {
+        "task": "实现历史记录功能：保存/查看/清空/搜索，适配暗黑模式",
+        "signals": {
+          "est_loc": 240,
+          "files": 4,
+          "ac_count": 5,
+          "external_deps": 1,
+          "cross_module": true,
+          "est_hours": 8
+        }
+      },
+      "expected": {
+        "size": "L",
+        "action": "进入拆解阶段"
+      }
+    },
+    {
+      "id": "size-004",
+      "category": "规模评估",
+      "description": "大任务（仅AC多，其他小） → L（任一信号触发L）",
+      "input": {
+        "task": "给10个页面添加统一的错误提示",
+        "signals": {
+          "est_loc": 30,
+          "files": 1,
+          "ac_count": 10,
+          "external_deps": 0,
+          "cross_module": false,
+          "est_hours": 1
+        }
+      },
+      "expected": {
+        "size": "L",
+        "action": "进入拆解阶段",
+        "note": "AC数量(10)触发L，其他信号小"
+      }
+    },
+    {
+      "id": "decompose-001",
+      "category": "任务拆解",
+      "description": "开发类L任务 → 按模块拆解",
+      "input": {
+        "task": "实现历史记录功能",
+        "type": "type:feature",
+        "size": "L"
+      },
+      "expected": {
+        "decompose_by": "按模块/分层",
+        "min_subtasks": 2,
+        "max_subtasks": 5,
+        "max_depth": 2,
+        "example_subtasks": [
+          "数据层（存储/读取）",
+          "UI层（展示/交互）",
+          "验证测试"
+        ]
+      }
+    },
+    {
+      "id": "decompose-002",
+      "category": "任务拆解",
+      "description": "调研类L任务 → 按子主题拆解",
+      "input": {
+        "task": "调研AI Agent协作方案",
+        "type": "type:research",
+        "size": "L"
+      },
+      "expected": {
+        "decompose_by": "按子主题",
+        "min_subtasks": 2,
+        "max_subtasks": 5,
+        "max_depth": 2,
+        "example_subtasks": [
+          "GitHub Issues方案调研",
+          "Hermes Kanban方案调研",
+          "对比分析与建议"
+        ]
+      }
+    },
+    {
+      "id": "decompose-003",
+      "category": "任务拆解",
+      "description": "测试类L任务 → 按测试类型拆解",
+      "input": {
+        "task": "全面验证百分号按钮",
+        "type": "type:verification",
+        "size": "L"
+      },
+      "expected": {
+        "decompose_by": "按测试类型",
+        "min_subtasks": 2,
+        "max_subtasks": 5,
+        "max_depth": 2,
+        "example_subtasks": [
+          "编译验证",
+          "功能测试",
+          "UI截图验证"
+        ]
+      }
+    },
+    {
+      "id": "decompose-004",
+      "category": "任务拆解",
+      "description": "批量上限：超过5个子任务 → 分批创建",
+      "input": {
+        "task": "重构整个计算器App",
+        "type": "type:feature",
+        "size": "L",
+        "estimated_subtasks": 8
+      },
+      "expected": {
+        "batch_limit": 5,
+        "note": "超过批量上限，需分2批创建（5 + 3）"
+      }
+    },
+    {
+      "id": "decompose-005",
+      "category": "任务拆解",
+      "description": "深度限制：最多2层（L→M→S）",
+      "input": {
+        "task": "大任务A（L级）",
+        "type": "type:feature",
+        "size": "L",
+        "subtask": "子任务B（M级）"
+      },
+      "expected": {
+        "max_depth": 2,
+        "note": "子任务B已是M级，不继续拆解。禁止递归拆解S级任务"
+      }
+    },
+    {
+      "id": "decompose-006",
+      "category": "任务拆解",
+      "description": "依赖标记：子任务3依赖子任务1+2",
+      "input": {
+        "subtasks": [
+          {"id": 1, "title": "数据层实现", "independent": true},
+          {"id": 2, "title": "UI层实现", "independent": true},
+          {"id": 3, "title": "集成验证", "depends_on": [1, 2]}
+        ]
+      },
+      "expected": {
+        "dependency_marking": [
+          "#N3 depends on #N1（需N1完成后再开工）",
+          "#N3 depends on #N2（需N2完成后再开工）"
+        ],
+        "note": "父Issue需标记依赖关系，避免assignee同时开工"
+      }
+    },
+    {
+      "id": "assignee-001",
+      "category": "角色分配",
+      "description": "所有角色映射验证",
+      "inputs": [
+        {"type": "type:feature", "expected_assignee": "JungleAssistant"},
+        {"type": "type:bug", "expected_assignee": "JungleAssistant"},
+        {"type": "type:verification", "expected_assignee": "IntelliJungle"},
+        {"type": "type:research", "expected_assignee": "IntelliJungle"},
+        {"type": "type:learning", "expected_assignee": "IntelliJungle"},
+        {"type": "type:docs", "expected_assignee": "IntelliJungle"},
+        {"type": "type:decision", "expected_assignee": "zhangtbj"}
+      ],
+      "expected": {
+        "all_match": true,
+        "note": "七种类型各映射到正确的角色"
+      }
+    }
+  ],
+  "summary": {
+    "total_cases": 27,
+    "categories": {
+      "意图识别": 9,
+      "混合类型优先级": 5,
+      "未知类型兜底": 2,
+      "规模评估": 4,
+      "任务拆解": 6,
+      "角色分配": 1
+    },
+    "coverage": {
+      "intent_types": ["feature", "bug", "research", "verification", "learning", "docs", "decision"],
+      "size_levels": ["S", "M", "L"],
+      "edge_cases": ["未知类型兜底", "混合类型优先级", "批量上限", "深度限制", "依赖标记"],
+      "languages": ["中文关键词", "英文关键词"]
+    }
+  }
+}
