@@ -1,0 +1,205 @@
+{
+  "version": "1.0.0",
+  "skill": "requirement-development",
+  "description": "需求开发 Skill 评测集 — 验证 NL 需求解析、复杂度评估、SPEC 报告生成、代码实现策略、编译验证、流转逻辑的正确性",
+  "updated": "2026-05-14",
+  "cases": [
+    {
+      "id": "intent-001",
+      "category": "意图识别",
+      "description": "Issue body 含「新增百分比按钮」→ 正确分类为 requirement-add",
+      "input": {
+        "issue_body": "需要在计算器上新增一个百分比按钮，点击后对当前数字做除100操作",
+        "repo": "opencalc-harmonyos"
+      },
+      "expected": {
+        "type": "requirement-add",
+        "complexity": "S",
+        "reason": "单一 UI 按钮 + 简单数学逻辑，不涉及新模块"
+      }
+    },
+    {
+      "id": "intent-002",
+      "category": "意图识别",
+      "description": "Issue body 含 bug 描述「除零崩溃」→ 正确分类为 bugfix",
+      "input": {
+        "issue_body": "输入 5/0 后点击等号，应用闪退。需要加除零保护",
+        "repo": "opencalc-harmonyos"
+      },
+      "expected": {
+        "type": "bugfix",
+        "complexity": "S",
+        "reason": "单处逻辑修复，加条件判断即可"
+      }
+    },
+    {
+      "id": "complexity-001",
+      "category": "复杂度评估",
+      "description": "1 文件 + 纯 UI 改动 → 评估为 S 级，跳过 delta-design.md",
+      "input": {
+        "files_affected": ["CalculatorPage.ets"],
+        "estimated_loc": "+30 -5",
+        "domains": ["UI"],
+        "new_modules": false
+      },
+      "expected": {
+        "complexity": "S",
+        "skip": ["delta-design.md"],
+        "produce": ["proposal.md", "delta-spec.md", "info.md", "tasks.md", "todo.md"],
+        "note": "S 级跳过架构设计，节省文档成本"
+      }
+    },
+    {
+      "id": "complexity-002",
+      "category": "复杂度评估",
+      "description": "跨 3-5 文件 + 涉及数据层 → 评估为 M 级，完整流程",
+      "input": {
+        "files_affected": ["HistoryPage.ets", "HistoryItem.ets", "HistoryStore.ets", "CalculatorPage.ets"],
+        "estimated_loc": "+200 -80",
+        "domains": ["UI", "数据层"],
+        "new_modules": false
+      },
+      "expected": {
+        "complexity": "M",
+        "skip": [],
+        "produce": ["proposal.md", "delta-spec.md", "info.md", "delta-design.md", "tasks.md", "todo.md"],
+        "note": "M 级跨层改动，需要完整设计文档"
+      }
+    },
+    {
+      "id": "spec-001",
+      "category": "SPEC报告生成",
+      "description": "从 NL 需求生成 proposal.md 含全部必需字段",
+      "input": {
+        "nl_requirement": "在单位转换器页面新增长度单位转换：厘米 ↔ 英寸",
+        "type": "requirement-add"
+      },
+      "expected": {
+        "proposal_sections": [
+          "意图分类",
+          "需求描述",
+          "影响分析（文件/改动量/依赖/风险）",
+          "领域映射（UI层/逻辑层/数据层）"
+        ],
+        "all_sections_present": true,
+        "complexity": "S"
+      }
+    },
+    {
+      "id": "spec-002",
+      "category": "SPEC报告生成",
+      "description": "delta-spec.md 含 AC 清单 + 边界条件",
+      "input": {
+        "nl_requirement": "为小费计算器新增「向上取整」模式",
+        "type": "requirement-add"
+      },
+      "expected": {
+        "has_acceptance_criteria": true,
+        "ac_count_min": 2,
+        "has_boundary_conditions": true,
+        "boundary_covers": ["空输入", "0元账单", "极大金额", "非整数人数"]
+      }
+    },
+    {
+      "id": "code-001",
+      "category": "代码实现策略",
+      "description": "S 级需求：write_file 直接写入完整文件（非 execute_code write_file）",
+      "input": {
+        "complexity": "S",
+        "task": "新增百分比按钮到 CalculatorPage.ets",
+        "changes_count": 3
+      },
+      "expected": {
+        "use_tool": "write_file",
+        "not_use": ["execute_code write_file for .ets"],
+        "reason": "execute_code write_file 对 .ets 是追加模式，会损坏文件；顶层 write_file 是干净覆盖"
+      }
+    },
+    {
+      "id": "code-002",
+      "category": "代码实现策略",
+      "description": "patch 工具使用：短字符串 → 加足够长上下文避免假匹配",
+      "input": {
+        "task": "修改 CalculatorPage.ets 中 onAC() 方法内的一行逻辑",
+        "target_line": "if (this.prefs) this.prefs.setHistory(this.history)",
+        "occurrences_in_file": 2
+      },
+      "expected": {
+        "strategy": "给 old_string 加前后 3-5 行唯一上下文",
+        "fallback": "若上下文仍无法保证唯一 → 改用 write_file 写完整文件",
+        "risk": "短字符串在文件中出现多次时 patch 假匹配到错误位置"
+      }
+    },
+    {
+      "id": "compile-001",
+      "category": "编译验证",
+      "description": "本地无 SDK → 标注 ⚠️ + 委托爹助验证",
+      "input": {
+        "sdk_available": false,
+        "has_dev_eco_studio": false
+      },
+      "expected": {
+        "action": "NOT block",
+        "apply_report_note": "⚠️ 本地无SDK，待爹助编译验证",
+        "next_step": "完成代码修改后 assign 给 IntelliJungle 进行编译验证",
+        "must_not": "自行合并代码"
+      }
+    },
+    {
+      "id": "flow-001",
+      "category": "Issue流转",
+      "description": "开发完成 → assignee 从 JungleAssistant 变更为 IntelliJungle（分两步）",
+      "input": {
+        "current_assignee": "JungleAssistant",
+        "task_status": "completed",
+        "all_ac_passed": true
+      },
+      "expected": {
+        "step1": "gh issue edit <N> --remove-assignee JungleAssistant",
+        "step2": "gh issue edit <N> --add-assignee IntelliJungle",
+        "step1_before_step2": true,
+        "must_not": "同时 add+remove（可能留双 assignee）",
+        "comment_language": "中文"
+      }
+    }
+  ],
+  "summary": {
+    "total_cases": 10,
+    "categories": {
+      "意图识别": 2,
+      "复杂度评估": 2,
+      "SPEC报告生成": 2,
+      "代码实现策略": 2,
+      "编译验证": 1,
+      "Issue流转": 1
+    },
+    "coverage": {
+      "scenarios": [
+        "NL需求解析→意图分类",
+        "bug修复识别",
+        "S级复杂度评估+跳过策略",
+        "M级复杂度评估+完整流程",
+        "proposal.md生成",
+        "delta-spec.md含AC+边界",
+        "ArkTS文件修改安全策略",
+        "patch假匹配防护",
+        "无SDK环境降级处理",
+        "Issue assignee流转"
+      ],
+      "edge_cases": [
+        "短字符串在文件中多次出现导致patch假匹配",
+        "本地无编译环境时委托验证",
+        "双assignee陷阱的分步避免"
+      ],
+      "output_formats": [
+        "proposal.md",
+        "delta-spec.md",
+        "delta-design.md (M/L级)",
+        "info.md",
+        "tasks.md",
+        "todo.md",
+        "apply-report.md"
+      ]
+    }
+  }
+}
