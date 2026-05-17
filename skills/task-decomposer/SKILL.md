@@ -82,6 +82,8 @@ metadata:
 - Jeff Patton, "User Story Mapping" (O'Reilly, 2014)
 - Bill Wake, "Twenty Ways to Split Stories" (Agile Alliance): https://www.agilealliance.org/glossary/story-splitting/
 
+> 📚 **完整业界对标数据**（含五大来源详细映射、反方论点、引用模板）：见 [`references/task-sizing-industry-benchmarks.md`](references/task-sizing-industry-benchmarks.md)
+
 ### 拆解决策
 
 | 规模 | 拆解决策 | 说明 |
