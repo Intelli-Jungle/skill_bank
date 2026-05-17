@@ -135,6 +135,35 @@ git push origin screenshots/issue<N>
 
 引用格式：`![描述](https://raw.githubusercontent.com/JungleTestLabs/opencalc-harmonyos/screenshots/issue<N>/.github/screenshots/issue<N>/01_name.jpeg)`
 
+> ⚠️ **顺序硬性要求**：先 push 截图，再用 `ls` 拿到**实际**文件名写报告。不准先写报告再补图，那样 100% 出现「报告里 URL 跟实际文件名对不上」。
+
+### 步骤 6.5：截图证据有效性自检（强制）
+
+报告发布前必须过这两关，少一关都不许 `[PASS]`：
+
+#### 关 A：URL 全部可达
+
+```bash
+# 把报告里所有 https://raw.githubusercontent.com/... URL 提出来 curl
+bash skills/software-development/requirement-verification/scripts/verify-screenshot-urls.sh /tmp/report.md
+```
+
+任何一条 HTTP != 200 → 立即修，不许发。
+
+#### 关 B：截图内容 ≠ 文件名声称
+
+每张图打开看，**必须同框出现「算式 + `=` 后的结果」**。下列情况一律不算证据：
+
+- ❌ 主屏只显示 `0` 或上一次结果残留 → 说明你截了清屏后的那一帧
+- ❌ 只看得到按钮被加上去，看不到运算结果 → 这只能证明 UI 改动，不能证明计算逻辑
+- ❌ 副屏数字跟当前断言无关（如断言 `100+10%=110` 但屏上是 `42.4232`）→ 说明你截了别的场景的过程帧
+- ❌ 4 条 AC 但只有 3 张图、或 N 条 AC 跟 N 张图不是 1:1 → 直接缺证据
+
+发布前自问：**「这张图单独拿出来，能不能让狗爹只看图就相信这条 AC 通过？」** 不能 → 重截。
+
+> 这条规则的来源：Issue #9 百分号按钮验证当时声称 4 条 `[PASS]`，实际上传的 3 张图里有 2 张是清屏后/无关帧，能证明的只是「`%` 按钮画上去了」，不是「`%` 计算正确」。事后被狗爹抓到，整个验证报告失信。**这是 skill 第一致命陷阱。**
+> 详细复盘见 `references/issue9-screenshot-evidence-failure.md`。
+
 ### 步骤 7：生成验证报告
 
 #### 报告保存位置
@@ -289,3 +318,8 @@ gh issue edit <N> --repo Intelli-Jungle/hermes-agent-workflow --add-assignee Jun
 
 地址：`Intelli-Jungle/skill_bank`
 https://github.com/Intelli-Jungle/skill_bank
+
+## 支持文件
+
+- `references/issue9-screenshot-evidence-failure.md` — Issue #9 截图证据失效完整复盘，解释为什么有了步骤 6.5 自检关卡。
+- `scripts/verify-screenshot-urls.sh` — 报告发布前批量 curl 抽检 raw URL，全 200 才放行。
